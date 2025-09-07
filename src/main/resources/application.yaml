@@ -18,7 +18,7 @@ spring:
       hibernate.jdbc.time_zone: UTC
 
   kafka:
-    bootstrap-servers: localhost:9092   # make sure it's lowercase "localhost"
+    bootstrap-servers: localhost:9094   # make sure it's lowercase "localhost"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
