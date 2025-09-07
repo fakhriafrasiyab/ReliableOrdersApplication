@@ -18,16 +18,21 @@ spring:
       hibernate.jdbc.time_zone: UTC
 
   kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: reliable-orders
-      auto-offset-reset: earliest
-      properties:
-        spring.json.trusted.packages: "*"
+    bootstrap-servers: localhost:9092   # make sure it's lowercase "localhost"
     producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         enable.idempotence: true
         acks: all
+    consumer:
+      group-id: reliable-orders
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        isolation.level: read_committed
 
 management:
   endpoints.web.exposure.include: health,info,metrics
