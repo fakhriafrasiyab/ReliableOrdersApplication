@@ -31,8 +31,8 @@ services:
       KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@localhost:9093"
       KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
     ports:
-      - "9092:9092"   # internal listener (for containers via "kafka:9092")
-      - "9094:9094"   # host listener (for Mac via "localhost:9094")
+      - "9094:9094"   # host listener for apps on your Mac
+      - "9092:9092"   # internal listener for other containers (kafka-ui)
     volumes:
       - kafkadata:/bitnami/kafka
     depends_on:
