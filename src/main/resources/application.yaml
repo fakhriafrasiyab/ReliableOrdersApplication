@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orders
+    username: app
+    password: app
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.jdbc.time_zone: UTC
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: reliable-orders
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: "*"
+    producer:
+      properties:
+        enable.idempotence: true
+        acks: all
+
+management:
+  endpoints.web.exposure.include: health,info,metrics
