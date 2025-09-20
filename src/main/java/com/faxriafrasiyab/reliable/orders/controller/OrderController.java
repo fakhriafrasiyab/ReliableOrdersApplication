@@ -21,14 +21,9 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderProducer orderProducer;
 
-    private final KafkaTemplate<String, Object> kafka;
-    private final AppTopics ordersTopic;
 
-    public OrderController(OrderService orderService, KafkaTemplate<String, Object> kafka,
-                           AppTopics ordersTopic, OrderProducer orderProducer) {
+    public OrderController(OrderService orderService, OrderProducer orderProducer) {
         this.orderService = orderService;
-        this.kafka = kafka;
-        this.ordersTopic = ordersTopic;
         this.orderProducer = orderProducer;
     }
 
