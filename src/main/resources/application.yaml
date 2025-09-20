@@ -35,4 +35,11 @@ spring:
         isolation.level: read_committed
 
 management:
-  endpoints.web.exposure.include: health,info,metrics
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+  endpoint:
+    health:
+      show-details: always
+
