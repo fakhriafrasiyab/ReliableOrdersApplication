@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class OrderConsumer {
 
 
-    @KafkaListener(topics = "#{appTopics.orders()}", groupId = "reliable-orders")
+    @KafkaListener(topics = "${app.topics.orders}", groupId = "reliable-orders")
     public void consume(OrderCreatedEvent orderConsumeEvent) {
         System.out.println("Order Consume Event: " + orderConsumeEvent);
     }
