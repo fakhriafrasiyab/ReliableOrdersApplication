@@ -4,7 +4,9 @@ import com.faxriafrasiyab.reliable.orders.config.AppTopics;
 import com.faxriafrasiyab.reliable.orders.dto.OrderDto;
 import com.faxriafrasiyab.reliable.orders.entity.Order;
 import com.faxriafrasiyab.reliable.orders.events.OrderCreatedEvent;
+import com.faxriafrasiyab.reliable.orders.producer.OrderProducer;
 import com.faxriafrasiyab.reliable.orders.repository.OrderRepository;
+import com.faxriafrasiyab.reliable.orders.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,44 +18,33 @@ import java.util.List;
 @RequestMapping("/orders")
 public class OrderController {
 
-    private final OrderRepository orderRepository;
+    private final OrderService orderService;
+    private final OrderProducer orderProducer;
 
-    //    @Autowired
     private final KafkaTemplate<String, Object> kafka;
     private final AppTopics ordersTopic;
 
-    public OrderController(OrderRepository orderRepository, KafkaTemplate<String, Object> kafka,
-                           AppTopics ordersTopic) {
-        this.orderRepository = orderRepository;
+    public OrderController(OrderService orderService, KafkaTemplate<String, Object> kafka,
+                           AppTopics ordersTopic, OrderProducer orderProducer) {
+        this.orderService = orderService;
         this.kafka = kafka;
         this.ordersTopic = ordersTopic;
+        this.orderProducer = orderProducer;
     }
 
     @PostMapping
     public Order createOrder(@RequestBody OrderDto orderDto) {
-        Order order = new Order();
-        order.setCustomerEmail(orderDto.customerEmail());
-        order.setAmount(orderDto.amount());
-        order.setCurrency(orderDto.currency());
-        Order orderSaved = orderRepository.save(order);
+        Order savedOrder = orderService.createOrder(orderDto);
 
-        OrderCreatedEvent event = new OrderCreatedEvent(order.getId(), order.getCustomerEmail(),
-                order.getAmount(), order.getCurrency());
+        OrderCreatedEvent event = new OrderCreatedEvent(savedOrder.getId(), savedOrder.getCustomerEmail(),
+                savedOrder.getAmount(), savedOrder.getCurrency());
+        orderProducer.sendOrderCreatedEvent(event);
 
-        kafka.send(ordersTopic.orders(), String.valueOf(orderSaved.getId()), event)
-                .whenComplete((metadata, exception) -> {
-                    if (exception != null) {
-                        System.err.println("Error sending order to topic " + ordersTopic +
-                                "Error message: " + exception.getMessage());
-                    } else {
-                        System.out.println("Event sent to kafka:" + metadata.getRecordMetadata().topic());
-                    }
-                });
-        return orderSaved;
+        return savedOrder;
     }
 
     @GetMapping
     public List<Order> getOrders() {
-        return orderRepository.findAll();
+        return orderService.retrieveAllOrders();
     }
 }
