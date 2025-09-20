@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderConsumer {
 
-
     private final OrderService orderService;
 
     public OrderConsumer(OrderService orderService) {
