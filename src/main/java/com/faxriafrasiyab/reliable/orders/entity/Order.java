@@ -20,6 +20,7 @@ public class Order {
     private String customerEmail;
     private BigDecimal amount;
     private String currency;
+    private String status;
 
     @Column(name = "created_at")
     private Instant createdAt = Instant.now();

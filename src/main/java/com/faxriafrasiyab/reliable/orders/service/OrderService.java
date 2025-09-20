@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -33,6 +34,22 @@ public class OrderService {
 
     public void handleNewOrderEvent(OrderCreatedEvent orderCreatedEvent) {
         System.out.println("Processing business logic for new order" + orderCreatedEvent.orderId());
+
+        if (orderCreatedEvent.amount().doubleValue() <= 0) {
+            throw new IllegalArgumentException("Amount must be positive for the order "
+                    + orderCreatedEvent.orderId());
+        }
+
+        Optional<Order> orderOptional = orderRepository.findById(orderCreatedEvent.orderId());
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setStatus("PROCESSING");
+            orderRepository.save(order);
+
+            System.out.println("Order " + orderCreatedEvent.orderId() + " moved to " + order.getStatus());
+        } else {
+            System.err.println("Order not found for event " + orderCreatedEvent);
+        }
     }
 
 
