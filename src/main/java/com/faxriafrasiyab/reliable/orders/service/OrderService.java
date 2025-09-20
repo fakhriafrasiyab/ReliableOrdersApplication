@@ -2,6 +2,7 @@ package com.faxriafrasiyab.reliable.orders.service;
 
 import com.faxriafrasiyab.reliable.orders.dto.OrderDto;
 import com.faxriafrasiyab.reliable.orders.entity.Order;
+import com.faxriafrasiyab.reliable.orders.events.OrderCreatedEvent;
 import com.faxriafrasiyab.reliable.orders.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,4 +30,10 @@ public class OrderService {
     public List<Order> retrieveAllOrders() {
         return orderRepository.findAll();
     }
+
+    public void handleNewOrderEvent(OrderCreatedEvent orderCreatedEvent) {
+        System.out.println("Processing business logic for new order" + orderCreatedEvent.orderId());
+    }
+
+
 }
